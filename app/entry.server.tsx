@@ -1,7 +1,10 @@
 import type { AppLoadContext } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import { isbot } from 'isbot';
-import { renderToReadableStream } from 'react-dom/server';
+// On Vercel's Node runtime `react-dom/server` is resolved as CommonJS, so
+// `renderToReadableStream` is not available as a named ESM export. Import the
+// module namespace and read the function off it to work on both Node and edge.
+import * as ReactDOMServer from 'react-dom/server';
 import { renderHeadToString } from 'remix-island';
 import { Head } from './root';
 import { themeStore } from '~/lib/stores/theme';
@@ -13,6 +16,8 @@ export default async function handleRequest(
   remixContext: any,
   _loadContext: AppLoadContext,
 ) {
+  const renderToReadableStream = (ReactDOMServer as any).renderToReadableStream as typeof import('react-dom/server').renderToReadableStream;
+
   const readable = await renderToReadableStream(<RemixServer context={remixContext} url={request.url} />, {
     signal: request.signal,
     onError(error: unknown) {
