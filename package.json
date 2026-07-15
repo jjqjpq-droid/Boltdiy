@@ -12,7 +12,8 @@
   },
   "scripts": {
     "deploy": "npm run build && wrangler pages deploy",
-    "build": "NODE_OPTIONS=--max-old-space-size=6144 remix vite:build",
+    "build": "node scripts/fix-util-types.mjs && NODE_OPTIONS=--max-old-space-size=6144 remix vite:build",
+    "postinstall": "node scripts/fix-util-types.mjs",
     "dev": "node pre-start.cjs  && remix vite:dev",
     "test": "vitest --run",
     "test:watch": "vitest",
@@ -217,10 +218,5 @@
     "fast-xml-parser": "^4.5.3",
     "jspdf": "latest"
   },
-  "packageManager": "pnpm@9.14.4",
-  "pnpm": {
-    "patchedDependencies": {
-      "util@0.12.5": "patches/util@0.12.5.patch"
-    }
-  }
+  "packageManager": "pnpm@9.14.4"
 }

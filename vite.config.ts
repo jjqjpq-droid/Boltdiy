@@ -23,20 +23,22 @@ export default defineConfig((config) => {
     build: {
       target: 'esnext',
     },
-    resolve: {
-      alias: config.isSsrBuild
-        ? {
-            // The transitive `util` browser polyfill (0.12.5) has no
-            // `util/types` submodule, which crashes the server build when
-            // `undici` imports it. Redirect the bare specifier to a committed
-            // shim that re-exports Node's native `node:util/types`. Using a
-            // `resolve.alias` (applied before the commonjs resolver) is
-            // reliable across environments, unlike relying on a pnpm patch.
-            'util/types': utilTypesShim,
-          }
-        : {},
-    },
     plugins: [
+      // Belt-and-suspenders: if anything still references `util/types`, serve a
+      // shim that re-exports Node's native module. The primary fix is the
+      // `scripts/fix-util-types.mjs` step in the build, which materializes the
+      // missing `util/types` file that the `util` polyfill package lacks.
+      config.isSsrBuild && {
+        name: 'shim-util-types',
+        enforce: 'pre' as const,
+        resolveId(source: string) {
+          if (source === 'node:util/types' || source === 'util/types') {
+            return utilTypesShim;
+          }
+
+          return null;
+        },
+      },
       // Only polyfill Node built-ins for the client bundle. The Vercel server
       // runtime is Node.js and provides the real modules, so polyfilling there
       // breaks packages like `undici` that import `util/types`.
