@@ -20,7 +20,7 @@ import AmazonBedrockProvider from './providers/amazon-bedrock';
 import GithubProvider from './providers/github';
 import MoonshotProvider from './providers/moonshot';
 import ZaiProvider from './providers/z-ai';
-import Hy3Provider from './providers/hy3';
+import PerplexityUnlimitedProvider from './providers/perplexity-unlimited';
 
 export {
   AnthropicProvider,
@@ -45,5 +45,5 @@ export {
   AmazonBedrockProvider,
   GithubProvider,
   ZaiProvider,
-  Hy3Provider,
+  PerplexityUnlimitedProvider,
 };
