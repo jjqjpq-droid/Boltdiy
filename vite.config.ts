@@ -1,4 +1,5 @@
-import { cloudflareDevProxyVitePlugin as remixCloudflareDevProxy, vitePlugin as remixVitePlugin } from '@remix-run/dev';
+import { vitePlugin as remixVitePlugin } from '@remix-run/dev';
+import { vercelPreset } from '@vercel/remix/vite';
 import UnoCSS from 'unocss/vite';
 import { defineConfig, type ViteDevServer } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
@@ -20,16 +21,20 @@ export default defineConfig((config) => {
       target: 'esnext',
     },
     plugins: [
-      nodePolyfills({
-        include: ['buffer', 'process', 'util', 'stream'],
-        globals: {
-          Buffer: true,
-          process: true,
-          global: true,
-        },
-        protocolImports: true,
-        exclude: ['child_process', 'fs', 'path'],
-      }),
+      // Only polyfill Node built-ins for the client bundle. The Vercel server
+      // runtime is Node.js and provides the real modules, so polyfilling there
+      // breaks packages like `undici` that import `util/types`.
+      !config.isSsrBuild &&
+        nodePolyfills({
+          include: ['buffer', 'process', 'util', 'stream'],
+          globals: {
+            Buffer: true,
+            process: true,
+            global: true,
+          },
+          protocolImports: true,
+          exclude: ['child_process', 'fs', 'path'],
+        }),
       {
         name: 'buffer-polyfill',
         transform(code, id) {
@@ -43,8 +48,8 @@ export default defineConfig((config) => {
           return null;
         },
       },
-      config.mode !== 'test' && remixCloudflareDevProxy(),
       remixVitePlugin({
+        presets: [vercelPreset()],
         future: {
           v3_fetcherPersist: true,
           v3_relativeSplatPath: true,

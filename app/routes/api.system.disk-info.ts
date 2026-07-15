@@ -1,5 +1,5 @@
-import type { ActionFunctionArgs, LoaderFunction } from '@remix-run/cloudflare';
-import { json } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
 
 // Only import child_process if we're not in a Cloudflare environment
 let execSync: any;
