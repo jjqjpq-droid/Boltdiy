@@ -19,6 +19,28 @@ export default defineConfig((config) => {
     },
     build: {
       target: 'esnext',
+      rollupOptions: config.isSsrBuild
+        ? {
+            // Keep `undici` out of the server bundle entirely. Rolling it up
+            // makes the bundler try to load `util/types` from the `util`
+            // browser polyfill (which has no such submodule) and crashes.
+            // Vercel's Node runtime provides `undici` and `node:util` natively.
+            external: ['undici'],
+          }
+        : {},
+    },
+    ssr: {
+      external: ['undici'],
+    },
+    resolve: {
+      alias: config.isSsrBuild
+        ? [
+            // The transitive `util` browser polyfill (0.12.5) has no
+            // `util/types` submodule, which crashes the server build when
+            // `undici` imports it. Redirect to Node's native module.
+            { find: /^util\/types$/, replacement: 'node:util/types' },
+          ]
+        : [],
     },
     plugins: [
       // Only polyfill Node built-ins for the client bundle. The Vercel server
