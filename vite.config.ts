@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { vitePlugin as remixVitePlugin } from '@remix-run/dev';
 import { vercelPreset } from '@vercel/remix/vite';
 import UnoCSS from 'unocss/vite';
@@ -6,6 +7,8 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { optimizeCssModules } from 'vite-plugin-optimize-css-modules';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import * as dotenv from 'dotenv';
+
+const utilTypesShim = fileURLToPath(new URL('./vite-shims/util-types.js', import.meta.url));
 
 // Load environment variables from multiple files
 dotenv.config({ path: '.env.local' });
@@ -19,35 +22,21 @@ export default defineConfig((config) => {
     },
     build: {
       target: 'esnext',
-      rollupOptions: config.isSsrBuild
+    },
+    resolve: {
+      alias: config.isSsrBuild
         ? {
-            // Keep `undici` out of the server bundle entirely. Rolling it up
-            // makes the bundler try to load `util/types` from the `util`
-            // browser polyfill (which has no such submodule) and crashes.
-            // Vercel's Node runtime provides `undici` and `node:util` natively.
-            external: ['undici'],
+            // The transitive `util` browser polyfill (0.12.5) has no
+            // `util/types` submodule, which crashes the server build when
+            // `undici` imports it. Redirect the bare specifier to a committed
+            // shim that re-exports Node's native `node:util/types`. Using a
+            // `resolve.alias` (applied before the commonjs resolver) is
+            // reliable across environments, unlike relying on a pnpm patch.
+            'util/types': utilTypesShim,
           }
         : {},
     },
-    ssr: {
-      external: ['undici'],
-    },
     plugins: [
-      // The transitive `util` browser polyfill (0.12.5) has no `util/types`
-      // submodule, so the server build crashes when `undici` imports it.
-      // Force any `util/types` request (bare specifier or the pre-resolved
-      // polyfill path) to Node's native `node:util/types`.
-      config.isSsrBuild && {
-        name: 'redirect-util-types-to-node',
-        enforce: 'pre' as const,
-        resolveId(source: string) {
-          if (source === 'util/types' || /[\\/]util[\\/]types$/.test(source)) {
-            return { id: 'node:util/types', external: true };
-          }
-
-          return null;
-        },
-      },
       // Only polyfill Node built-ins for the client bundle. The Vercel server
       // runtime is Node.js and provides the real modules, so polyfilling there
       // breaks packages like `undici` that import `util/types`.
