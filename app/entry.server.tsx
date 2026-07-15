@@ -105,12 +105,11 @@ export default async function handleRequest(
 
   responseHeaders.set('Content-Type', 'text/html');
 
-  // COEP require-corp blocks cross-origin sub-resources in preview iframes;
-  // only enable these headers in production where SharedArrayBuffer is needed.
-  if (process.env.NODE_ENV === 'production') {
-    responseHeaders.set('Cross-Origin-Embedder-Policy', 'require-corp');
-    responseHeaders.set('Cross-Origin-Opener-Policy', 'same-origin');
-  }
+  // Cross-origin isolation is required for WebContainer's SharedArrayBuffer.
+  // `credentialless` enables isolation while still allowing cross-origin
+  // sub-resources (they load without credentials) so preview iframes work.
+  responseHeaders.set('Cross-Origin-Embedder-Policy', 'credentialless');
+  responseHeaders.set('Cross-Origin-Opener-Policy', 'same-origin');
 
   return new Response(body, {
     headers: responseHeaders,

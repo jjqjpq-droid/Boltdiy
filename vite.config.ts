@@ -85,6 +85,14 @@ export default defineConfig((config) => {
       port: 5000,
       strictPort: true,
       allowedHosts: true,
+      // WebContainer boots with `coep: 'credentialless'`, which requires the
+      // page to be cross-origin isolated (so `SharedArrayBuffer` works).
+      // `credentialless` enables isolation without blocking cross-origin
+      // sub-resources inside preview iframes the way `require-corp` would.
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'credentialless',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+      },
     },
     envPrefix: [
       'VITE_',
