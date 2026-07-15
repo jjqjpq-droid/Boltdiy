@@ -17,9 +17,9 @@ export function Header() {
     >
       <div className="flex items-center gap-2 z-logo text-bolt-elements-textPrimary cursor-pointer">
         <div className="i-ph:sidebar-simple-duotone text-xl" />
-        <a href="/" className="text-2xl font-semibold text-accent flex items-center">
-          <img src="/ng-logo-light.png" alt="NG AI logo" className="h-8 w-auto inline-block dark:hidden" />
-          <img src="/ng-logo-dark.png" alt="NG AI logo" className="h-8 w-auto inline-block hidden dark:block" />
+        <a href="/" className="text-xl font-semibold text-bolt-elements-textPrimary flex items-center gap-2">
+          <img src="/ng-logo-light.png" alt="NG AI logo" className="h-8 w-8 rounded-md inline-block" />
+          <span className="hidden sm:inline">NG AI</span>
         </a>
       </div>
       <a
