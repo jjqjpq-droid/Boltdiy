@@ -21,6 +21,9 @@ import GithubProvider from './providers/github';
 import MoonshotProvider from './providers/moonshot';
 import ZaiProvider from './providers/z-ai';
 import PerplexityUnlimitedProvider from './providers/perplexity-unlimited';
+import GLMFreeProvider from './providers/glm-free';
+import DolphinFreeProvider from './providers/dolphin-free';
+import QwenFreeProvider from './providers/qwen-free';
 
 export {
   AnthropicProvider,
@@ -46,4 +49,7 @@ export {
   GithubProvider,
   ZaiProvider,
   PerplexityUnlimitedProvider,
+  GLMFreeProvider,
+  DolphinFreeProvider,
+  QwenFreeProvider,
 };

@@ -29,6 +29,9 @@ export const PROVIDER_COMPLETION_LIMITS: Record<string, number> = {
   AmazonBedrock: 8192,
   Hyperbolic: 8192,
   PerplexityUnlimited: 8000,
+  GLMFree: 8000,
+  DolphinFree: 8000,
+  QwenFree: 8000,
 };
 
 /*

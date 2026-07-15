@@ -355,9 +355,20 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                 <h1 className="text-3xl lg:text-6xl font-bold text-bolt-elements-textPrimary mb-4 animate-fade-in">
                   Where ideas begin
                 </h1>
-                <p className="text-md lg:text-xl mb-8 text-bolt-elements-textSecondary animate-fade-in animation-delay-200">
+                <p className="text-md lg:text-xl mb-6 text-bolt-elements-textSecondary animate-fade-in animation-delay-200">
                   Bring ideas to life in seconds or get help on existing projects.
                 </p>
+                <div className="flex justify-center mb-4 animate-fade-in animation-delay-200">
+                  <a
+                    href="https://t.me/NGYT777GGG"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full bg-[#229ED9] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1b8ec2]"
+                  >
+                    <div className="i-ph:telegram-logo-fill text-lg" />
+                    Join our Telegram
+                  </a>
+                </div>
               </div>
             )}
             <StickToBottom
