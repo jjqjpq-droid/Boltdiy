@@ -32,17 +32,22 @@ export default defineConfig((config) => {
     ssr: {
       external: ['undici'],
     },
-    resolve: {
-      alias: config.isSsrBuild
-        ? [
-            // The transitive `util` browser polyfill (0.12.5) has no
-            // `util/types` submodule, which crashes the server build when
-            // `undici` imports it. Redirect to Node's native module.
-            { find: /^util\/types$/, replacement: 'node:util/types' },
-          ]
-        : [],
-    },
     plugins: [
+      // The transitive `util` browser polyfill (0.12.5) has no `util/types`
+      // submodule, so the server build crashes when `undici` imports it.
+      // Force any `util/types` request (bare specifier or the pre-resolved
+      // polyfill path) to Node's native `node:util/types`.
+      config.isSsrBuild && {
+        name: 'redirect-util-types-to-node',
+        enforce: 'pre' as const,
+        resolveId(source: string) {
+          if (source === 'util/types' || /[\\/]util[\\/]types$/.test(source)) {
+            return { id: 'node:util/types', external: true };
+          }
+
+          return null;
+        },
+      },
       // Only polyfill Node built-ins for the client bundle. The Vercel server
       // runtime is Node.js and provides the real modules, so polyfilling there
       // breaks packages like `undici` that import `util/types`.
